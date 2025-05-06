@@ -22,7 +22,7 @@ android.applicationVariants.configureEach { variant ->
 
 android {
     namespace 'com.a4455jkjh.apktool'
-    compileSdk 28
+    compileSdk 30
 
     lintOptions {
         checkReleaseBuilds false
@@ -33,9 +33,9 @@ android {
 
     defaultConfig {
         applicationId "com.a4455jkjh.apktool"
-        minSdk 14
+        minSdk 16
         //noinspection ExpiredTargetSdkVersion
-        targetSdk 28
+        targetSdk 30
         versionCode 1903280240
         versionName "2.4.0-190328"
         // Enable multidex. (Fix D8 dex file # methods: 71610 > 65536)

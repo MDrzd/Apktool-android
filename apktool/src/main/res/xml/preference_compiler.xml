@@ -4,7 +4,8 @@
 	<EditTextPreference
         android:title="@string/output_directory"
         android:key="output_directory"
-        android:summary="@string/output_directory_summary"/>
+        android:summary="@string/output_directory_summary"
+        android:defaultValue="/storage/emulated/0/apktool"/>
 	<CheckBoxPreference
         android:title="@string/mBakdeb"
         android:key="mBakdeb"

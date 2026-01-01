@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
+import android.os.Environment;
+import java.io.File;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,194 +23,208 @@ import com.a4455jkjh.apktool.R;
 import com.a4455jkjh.apktool.fragment.EditorFragment;
 import com.a4455jkjh.apktool.fragment.FilesFragment;
 import com.a4455jkjh.apktool.fragment.editor.EditorPagerAdapter;
-import com.a4455jkjh.apktool.util.Settings;
 
 public class MainActivity extends ThemedActivity implements DrawerLayout.DrawerListener {
-	private DrawerLayout drawer;
-	private EditorFragment editor;
-	private FilesFragment files;
+    private DrawerLayout drawer;
+    private EditorFragment editor;
+    private FilesFragment files;
+    private long lastClicked = 0L;
 
-	public boolean dismissFiles() {
-		if (drawer.isDrawerOpen(Gravity.LEFT)) {
-			drawer.closeDrawer(Gravity.LEFT);
-			return true;
-		}
-		return false;
-	}
+    public boolean dismissFiles() {
+        if (drawer.isDrawerOpen(Gravity.LEFT)) {
+            drawer.closeDrawer(Gravity.LEFT);
+            return true;
+        }
+        return false;
+    }
 
-	public void showFiles(int idx) {
-		files.setPage(idx);
-		drawer.openDrawer(Gravity.LEFT);
-	}
+    public void showFiles(int idx) {
+        files.setPage(idx);
+        drawer.openDrawer(Gravity.LEFT);
+    }
+
     @Override
     protected void init(Bundle savedInstanceState) {
         setContentView(R.layout.main);
-		drawer = findViewById(R.id.drawer);
-		drawer.addDrawerListener(this);
-		getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-		getActionBar().setCustomView(R.layout.title);
-		init(getSupportFragmentManager());
+        drawer = findViewById(R.id.drawer);
+        drawer.addDrawerListener(this);
+        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getActionBar().setCustomView(R.layout.title);
+        init(getSupportFragmentManager());
     }
-	public void init() {
-		onNewIntent(getIntent());
-	}
 
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		Uri data = intent.getData();
-		if (data == null)
-			return;
-		editor.open(data);
-		dismissFiles();
-	}
+    public void init() {
+        onNewIntent(getIntent());
+    }
 
-	private void init(FragmentManager supportFragmentManager) {
-		Fragment fragment = supportFragmentManager.findFragmentById(R.id.editor);
-		FilesFragment files;
-		if (fragment == null) {
-			EditorFragment editor = new EditorFragment();
-			files = new FilesFragment();
-			supportFragmentManager.beginTransaction().
-				add(R.id.editor, editor).
-				add(R.id.leftView, files).
-				commit();
-			this.editor = editor;
-		} else {
-			editor = (EditorFragment) fragment;
-			files = (FilesFragment) supportFragmentManager.findFragmentById(R.id.leftView);
-		}
-		files.bind(editor);
-		this.files = files;
-	}
-	private long lastClicked = 0L;
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Uri data = intent.getData();
+        if (data == null) return;
+        editor.open(data);
+        dismissFiles();
+    }
 
-	@Override
-	public void onBackPressed() {
-		if (dismissFiles() || editor.collapseItem())
-			return;
-		long curClick = System.currentTimeMillis();
-		if (curClick - lastClicked > 2000) {
-			Toast.makeText(this, R.string.click_once_more, 0).show();
-			lastClicked = curClick;
-			return;
-		}
-		checkExit();
-	}
+    private void init(FragmentManager supportFragmentManager) {
+        Fragment fragment = supportFragmentManager.findFragmentById(R.id.editor);
+        FilesFragment files;
+        if (fragment == null) {
+            EditorFragment editor = new EditorFragment();
+            files = new FilesFragment();
+            supportFragmentManager.beginTransaction()
+                    .add(R.id.editor, editor)
+                    .add(R.id.leftView, files)
+                    .commit();
+            this.editor = editor;
+        } else {
+            editor = (EditorFragment) fragment;
+            files = (FilesFragment) supportFragmentManager.findFragmentById(R.id.leftView);
+        }
+        files.bind(editor);
+        this.files = files;
+    }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
+    @Override
+    public void onBackPressed() {
+        if (dismissFiles() || editor.collapseItem()) return;
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.exit:
-				checkExit();
-				break;
-			case R.id.settings:
-				Intent i = new Intent(this, SettingActivity.class);
-				startActivity(i);
-				break;
-			default:
-				return false;
-		}
-		return true;
-	}
+        long curClick = System.currentTimeMillis();
+        if (curClick - lastClicked > 2000) {
+            Toast.makeText(this, R.string.click_once_more, Toast.LENGTH_SHORT).show();
+            lastClicked = curClick;
+            return;
+        }
+        checkExit();
+    }
 
-	private void checkExit() {
-		if (editor.hasUnSavedEditor())
-			showSaveDialog();
-		else
-			finish();
-	}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if (Settings.isFontSizeChanged) {
-			Settings.isFontSizeChanged = false;
-			EditorPagerAdapter.INSTANCE.setFontSize();
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.exit:
+                checkExit();
+                break;
+            case R.id.settings:
+                startActivity(new Intent(this, SettingActivity.class));
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
 
-	@Override
-	public void finish() {
-		EditorPagerAdapter.INSTANCE.exit();
-		super.finish();
-	}
+    private void checkExit() {
+        if (com.a4455jkjh.apktool.util.Settings.isFontSizeChanged) {
+            showSaveDialog();
+        } else {
+            finish();
+        }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-	private void showSaveDialog() {
-		DialogInterface.OnClickListener l = new DialogInterface.OnClickListener(){
-			@Override
-			public void onClick(DialogInterface p1, int p2) {
-				if (p2 == DialogInterface.BUTTON_NEUTRAL)
-					return;
-				if (p2 == DialogInterface.BUTTON_POSITIVE)
-					editor.save(true, false);
-				finish();
-			}
-		};
-		new AlertDialog.Builder(this).
-			setTitle(R.string.save_file).
-			setMessage(R.string.save_file_msg).
-			setPositiveButton(R.string.yes, l).
-			setNegativeButton(R.string.no, l).
-			setNeutralButton(R.string.cancel, l).
-			show();
-	}
+        createApktoolFolder(); // buat folder otomatis
 
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		changeLeft();
-	}
+        // update font size jika berubah
+        if (com.a4455jkjh.apktool.util.Settings.isFontSizeChanged) {
+            com.a4455jkjh.apktool.util.Settings.isFontSizeChanged = false;
+            EditorPagerAdapter.INSTANCE.setFontSize();
+        }
+    }
 
-	private void changeLeft() {
-		View parent = drawer;
-		View child = parent.findViewById(R.id.leftView);
-		int width = parent.getWidth() / 5 * 4;
-		ViewGroup.LayoutParams params = child.getLayoutParams();
-		params.width = width;
-		child.setLayoutParams(params);
-	}
+    @Override
+    public void finish() {
+        EditorPagerAdapter.INSTANCE.exit();
+        super.finish();
+    }
 
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		Toast.makeText(this, "config", 0).show();
-		changeLeft();
-	}
+    private void showSaveDialog() {
+        DialogInterface.OnClickListener l = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface p1, int p2) {
+                if (p2 == DialogInterface.BUTTON_NEUTRAL) return;
+                if (p2 == DialogInterface.BUTTON_POSITIVE) editor.save(true, false);
+                finish();
+            }
+        };
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.save_file)
+                .setMessage(R.string.save_file_msg)
+                .setPositiveButton(R.string.yes, l)
+                .setNegativeButton(R.string.no, l)
+                .setNeutralButton(R.string.cancel, l)
+                .show();
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		editor.save(true, false);
-	}
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        changeLeft();
+    }
 
-	@Override
-	public void onDrawerSlide(View p1, float p2) {
-		// TODO: Implement this method
-	}
+    private void changeLeft() {
+        View parent = drawer;
+        View child = parent.findViewById(R.id.leftView);
+        int width = parent.getWidth() / 5 * 4;
+        ViewGroup.LayoutParams params = child.getLayoutParams();
+        params.width = width;
+        child.setLayoutParams(params);
+    }
 
-	@Override
-	public void onDrawerOpened(View p1) {
-		files.focus();
-		drawer.requestDisallowInterceptTouchEvent(false);
-	}
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        changeLeft();
+    }
 
-	@Override
-	public void onDrawerClosed(View p1) {
-		editor.focus();
-		drawer.requestDisallowInterceptTouchEvent(true);
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        editor.save(true, false);
+    }
 
-	@Override
-	public void onDrawerStateChanged(int p1) {
-		// TODO: Implement this method
-	}
+    @Override
+    public void onDrawerSlide(View p1, float p2) { }
 
+    @Override
+    public void onDrawerOpened(View p1) {
+        files.focus();
+        drawer.requestDisallowInterceptTouchEvent(false);
+    }
+
+    @Override
+    public void onDrawerClosed(View p1) {
+        editor.focus();
+        drawer.requestDisallowInterceptTouchEvent(true);
+    }
+
+    @Override
+    public void onDrawerStateChanged(int p1) { }
+
+private void createApktoolFolder() {
+    // Android 11+ harus All Files Access
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        // Cek akses dengan Environment.isExternalStorageManager()
+        if (!Environment.isExternalStorageManager()) {
+            Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            intent.setData(Uri.parse("package:" + getPackageName()));
+            startActivity(intent);
+            return;
+        }
+    }
+
+    // buat folder di root storage
+    File folder = new File(Environment.getExternalStorageDirectory(), "apktool");
+    if (!folder.exists()) {
+        folder.mkdirs();
+    }
 }
+			}

@@ -15,6 +15,12 @@ Issues and pull requests are welcome as long as they align with the project's go
 This project is developed for **educational and application development purposes only**.  
 Any misuse is the sole responsibility of the user.
 
+![License](https://img.shields.io/badge/License-GPL--2.0-blue.svg)
+![Development Status](https://img.shields.io/badge/Status-Active%20Development-success)
+![Last Commit](https://img.shields.io/github/last-commit/MDrzd/Apktool-android)
+![Commit Activity](https://img.shields.io/github/commit-activity/m/MDrzd/Apktool-android)
+![Issues](https://img.shields.io/github/issues/MDrzd/Apktool-android)
+![Stars](https://img.shields.io/github/stars/MDrzd/Apktool-android)
 
 ## Acknowledgment
 Special thanks to [4455jkjh](https://github.com/4455jkjh), the creator of **Apktool-android**, for successfully adapting and bringing Apktool to Android, making this project possible.
@@ -22,3 +28,8 @@ Special thanks to [4455jkjh](https://github.com/4455jkjh), the creator of **Apkt
 Thanks also to [wwxiaoqi](https://github.com/wwxiaoqi) for their contributions.
 
 
+## License
+This project is licensed under the **GNU General Public License v2.0 (GPL-2.0)**.
+
+You are free to use, modify, and distribute this software under the terms of the GPL v2.  
+See the LICENSE file for more details.

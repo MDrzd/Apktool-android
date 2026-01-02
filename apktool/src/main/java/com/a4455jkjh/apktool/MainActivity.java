@@ -23,6 +23,7 @@ import com.a4455jkjh.apktool.R;
 import com.a4455jkjh.apktool.fragment.EditorFragment;
 import com.a4455jkjh.apktool.fragment.FilesFragment;
 import com.a4455jkjh.apktool.fragment.editor.EditorPagerAdapter;
+import com.a4455jkjh.apktool.dialog.TextConverterDialog;
 
 public class MainActivity extends ThemedActivity implements DrawerLayout.DrawerListener {
     private DrawerLayout drawer;
@@ -104,20 +105,23 @@ public class MainActivity extends ThemedActivity implements DrawerLayout.DrawerL
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.exit:
-                checkExit();
-                break;
-            case R.id.settings:
-                startActivity(new Intent(this, SettingActivity.class));
-                break;
-            default:
-                return false;
-        }
-        return true;
+ @Override
+public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+        case R.id.exit:
+            checkExit();
+            break;
+        case R.id.settings:
+            startActivity(new Intent(this, SettingActivity.class));
+            break;
+        case R.id.text_converter:
+            TextConverterDialog.show(this);
+            break;
+        default:
+            return false;
     }
+    return true;
+}
 
     private void checkExit() {
         if (com.a4455jkjh.apktool.util.Settings.isFontSizeChanged) {
@@ -227,4 +231,4 @@ private void createApktoolFolder() {
         folder.mkdirs();
     }
 }
-			}
+}

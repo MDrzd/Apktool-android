@@ -21,6 +21,7 @@ Any misuse is the sole responsibility of the user.
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/MDrzd/Apktool-android)
 ![Issues](https://img.shields.io/github/issues/MDrzd/Apktool-android)
 ![Stars](https://img.shields.io/github/stars/MDrzd/Apktool-android)
+![Repository Size](https://img.shields.io/github/repo-size/MDrzd/Apktool-android)
 
 ## Acknowledgment
 Special thanks to [4455jkjh](https://github.com/4455jkjh), the creator of **Apktool-android**, for successfully adapting and bringing Apktool to Android, making this project possible.

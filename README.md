@@ -16,7 +16,6 @@ This project is developed for **educational and application development purposes
 Any misuse is the sole responsibility of the user.
 
 ![License](https://img.shields.io/badge/License-GPL--2.0-blue.svg)
-![Development Status](https://img.shields.io/badge/Status-Active%20Development-success)
 ![Last Commit](https://img.shields.io/github/last-commit/MDrzd/Apktool-android)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/MDrzd/Apktool-android)
 ![Issues](https://img.shields.io/github/issues/MDrzd/Apktool-android)
